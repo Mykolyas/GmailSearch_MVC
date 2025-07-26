@@ -1,0 +1,138 @@
+﻿@model EmailPageViewModel
+@{
+    Layout = "_Layout";
+    var query = Context.Request.Query;
+}
+
+<div class="container-fluid py-2 px-1 px-md-3">
+    <div class="mb-3">
+        @await Html.PartialAsync("_SearchForm", query)
+    </div>
+
+    <div class="mb-3">
+        @if (Model.Emails.Any())
+        {
+            <div class="email-table-container mb-2">
+                @await Html.PartialAsync("_EmailTable", Model.Emails)
+            </div>
+            <div class="d-flex justify-content-center">
+                @await Html.PartialAsync("_Pagination", (Model.CurrentPage, Model.TotalPages, query))
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info text-center">No emails found. Try searching by keyword or date.</div>
+        }
+    </div>
+
+    @await Html.PartialAsync("_EmailModal")
+</div>
+
+@section Scripts {
+    <script>
+        function showSpinner() {
+            document.getElementById("loadingOverlay").style.display = "flex";
+        }
+
+        function hideSpinner() {
+            document.getElementById("loadingOverlay").style.display = "none";
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("searchForm");
+
+            // 1. Валідація пошуку
+            if (form) {
+                form.addEventListener("submit", function (e) {
+                    const keyword = form.querySelector("input[name='keyword']").value.trim();
+                    const after = form.querySelector("input[name='after']").value;
+                    const before = form.querySelector("input[name='before']").value;
+
+                    const isValidDateFormat = (value) => /^\d{4}-\d{2}-\d{2}$/.test(value);
+                    const isValidDate = (value) => {
+                        if (!value || !isValidDateFormat(value)) return false;
+                        const date = new Date(value);
+                        return !isNaN(date.getTime());
+                    };
+
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0); // to compare only date
+
+                    const parsedAfter = after ? new Date(after) : null;
+                    const parsedBefore = before ? new Date(before) : null;
+
+                    // keyword is empty and no dates
+                    if (keyword === "" && !(after || before)) {
+                        e.preventDefault();
+                        alert("Потрібно ввести ключове слово або хоча б одну дату.");
+                        return;
+                    }
+
+                    // Invalid date: wrong format or non-existent date
+                    if ((after && !isValidDate(after)) || (before && !isValidDate(before))) {
+                        e.preventDefault();
+                        alert("Невалідна дата. Формат має бути YYYY-MM-DD, наприклад: 2024-12-31.");
+                        return;
+                    }
+
+                    // Start date is later than end date
+                    if (parsedAfter && parsedBefore && parsedAfter > parsedBefore) {
+                        e.preventDefault();
+                        alert("Початкова дата не може бути пізнішою за кінцеву.");
+                        return;
+                    }
+
+                    // Future date (after today)
+                    if ((parsedAfter && parsedAfter > today + 1)) {
+                        e.preventDefault();
+                        alert("Неможливо обрати дати в майбутньому.");
+                        return;
+                    }
+
+                    showSpinner();
+                });
+            }
+
+            // 2. Pagination
+            document.querySelectorAll(".pagination a").forEach(link => {
+                link.addEventListener("click", function () {
+                    showSpinner();
+                });
+            });
+
+            // 3. Clear button
+            const clearBtn = document.getElementById("clearSearchBtn");
+            if (clearBtn) {
+                clearBtn.addEventListener("click", function () {
+                    showSpinner();
+                    setTimeout(() => {
+                        window.location.href = window.location.origin + window.location.pathname;
+                    }, 100);
+                });
+            }
+
+            // 4. CKEditor
+            if (!CKEDITOR.instances.editor) {
+                CKEDITOR.replace("editor", {
+                    readOnly: true,
+                    allowedContent: true
+                });
+            }
+
+            document.querySelectorAll(".view-btn").forEach(btn => {
+                btn.addEventListener("click", function () {
+                    const id = this.dataset.id;
+                    fetch("/Gmail/ViewMessage?id=" + id)
+                        .then(res => res.text())
+                        .then(html => {
+                            CKEDITOR.instances.editor.setData(html);
+                            $("#emailModal").modal("show");
+                        });
+                });
+            });
+
+            // 5. Hide spinner after loading
+            window.onload = hideSpinner;
+        });
+    </script>
+}

@@ -1,0 +1,37 @@
+﻿@model List<EmailViewModel>
+@using System.Globalization
+
+<table class="table table-bordered table-hover bg-white rounded shadow-sm">
+    <thead class="table-light">
+        <tr>
+            <th>Subject</th>
+            <th class="d-none d-sm-table-cell">From</th>
+            <th>Date</th>
+            <th>View</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var email in Model)
+        {
+            <tr>
+                <td>@email.Subject</td>
+                <td class="d-none d-sm-table-cell">@email.From</td>
+                <td>
+                    @if (DateTime.TryParse(email.Date, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateTime))
+                    {
+                        @dateTime.ToString("ddd, dd MMMM", CultureInfo.InvariantCulture)
+                    }
+                    else
+                    {
+                        @email.Date
+                    }
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary view-btn" data-id="@email.Id">
+                        View
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

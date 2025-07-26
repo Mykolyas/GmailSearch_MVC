@@ -1,0 +1,22 @@
+﻿@model Microsoft.AspNetCore.Http.IQueryCollection
+
+<div class="d-flex justify-content-center mb-4">
+    <form method="get" class="row g-2 search-form-container" id="searchForm">
+        <div class="col-md-4 col-12">
+            <input type="text" name="keyword" value="@Model["keyword"]" class="form-control" placeholder="Keyword" />
+        </div>
+        <div class="col-md-3 col-6">
+            <input type="date" name="after" value="@Model["after"]" class="form-control" />
+        </div>
+        <div class="col-md-3 col-6">
+            <input type="date" name="before" value="@Model["before"]" class="form-control" />
+        </div>
+        <div class="col-md-1 col-6">
+            <button type="submit" class="btn btn-dark w-100">Search</button>
+        </div>
+        <div class="col-md-1 col-6">
+            <button type="button" class="btn btn-outline-secondary w-100" id="clearSearchBtn">Clear</button>
+        </div>
+    </form>
+</div>
+

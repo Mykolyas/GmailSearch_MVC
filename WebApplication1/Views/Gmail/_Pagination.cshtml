@@ -1,0 +1,43 @@
+﻿@model (int currentPage, int totalPages, Microsoft.AspNetCore.Http.IQueryCollection query)
+
+@if (Model.totalPages > 1)
+{
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            @if (Model.currentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?keyword=@Model.query["keyword"]&after=@Model.query["after"]&before=@Model.query["before"]&page=@(Model.currentPage - 1)">Previous</a>
+                </li>
+            }
+
+            @{
+                int maxPagesToShow = 5;
+                int startPage = Math.Max(1, Model.currentPage - maxPagesToShow / 2);
+                int endPage = Math.Min(Model.totalPages, startPage + maxPagesToShow - 1);
+
+                if (endPage - startPage < maxPagesToShow - 1)
+                {
+                    startPage = Math.Max(1, endPage - maxPagesToShow + 1);
+                }
+            }
+
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                <li class="page-item @(i == Model.currentPage ? "active" : "")">
+                    <a class="page-link"
+                       href="?keyword=@Model.query["keyword"]&after=@Model.query["after"]&before=@Model.query["before"]&page=@i">@i</a>
+                </li>
+            }
+
+            @if (Model.currentPage < Model.totalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?keyword=@Model.query["keyword"]&after=@Model.query["after"]&before=@Model.query["before"]&page=@(Model.currentPage + 1)">Next</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

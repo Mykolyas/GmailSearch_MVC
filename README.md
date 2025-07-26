@@ -326,7 +326,7 @@ If you encounter any issues or have questions:
 
 **Made with ❤️ using ASP.NET Core and Google Gmail API**
 
-[![GitHub stars](https://img.shields.io/github/stars/yourusername/gmail-search-app?style=social)](https://github.com/yourusername/gmail-search-app)
-[![GitHub forks](https://img.shields.io/github/forks/yourusername/gmail-search-app?style=social)](https://github.com/yourusername/gmail-search-app)
+[![GitHub stars](https://img.shields.io/github/stars/yourusername/gmail-search-app?style=social)](https://github.com/Mykolyas/gmail-search-app)
+[![GitHub forks](https://img.shields.io/github/forks/yourusername/gmail-search-app?style=social)](https://github.com/Mykolyas/gmail-search-app)
 
 </div>
